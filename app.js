@@ -1,5 +1,6 @@
 const reasonInput = document.getElementById('reason');
 const amountInput = document.getElementById('amount');
+const categoryInput = document.getElementById('category'); 
 const addBtn = document.getElementById('add-btn');
 const expenseList = document.getElementById('expense-list');
 const totalAmountDisplay = document.getElementById('total-amount');
@@ -14,39 +15,37 @@ function updateTotal() {
     totalAmountDisplay.textContent = total.toFixed(2);
 }
 
-// UPDATED FUNCTION: Now adds a delete button next to each item
 function renderExpenses() {
     expenseList.innerHTML = '';
     
-    // We add 'index' here to know exactly which item we want to delete
     expenses.forEach((item, index) => {
         const li = document.createElement('li');
         
-        // This creates the text AND a small red delete button
         li.innerHTML = `
-            <span>${item.reason} - $${item.amount}</span>
-            <button onclick="deleteExpense(${index})" style="width:auto; margin:0; padding:2px 8px; background-color:#dc3545;">X</button>
+            <div>
+                <span style="font-weight:600;">${item.reason}</span>
+                <small style="display:block; color:#6b7280; font-size:12px;">${item.category}</small>
+            </div>
+            <div style="display:flex; align-items:center; gap:12px;">
+                <span style="font-weight:700;">$${item.amount}</span>
+                <button class="delete-btn" onclick="deleteExpense(${index})">🗑️</button>
+            </div>
         `;
         expenseList.appendChild(li);
     });
     updateTotal();
 }
 
-// NEW FUNCTION: Removes the item when the 'X' button is clicked
 window.deleteExpense = function(index) {
-    // Remove 1 item at the specific index position
-    expenses.splice(index, 1); 
-    
-    // Save the new shortened list back to the browser storage
-    localStorage.setItem('expenses', JSON.stringify(expenses)); 
-    
-    // Refresh the screen
-    renderExpenses(); 
+    expenses.splice(index, 1);
+    localStorage.setItem('expenses', JSON.stringify(expenses));
+    renderExpenses();
 }
 
 addBtn.addEventListener('click', function() {
     const reasonText = reasonInput.value.trim();
     const amountText = amountInput.value.trim();
+    const categoryText = categoryInput.value; 
 
     if (reasonText === '' || amountText === '') {
         alert('Please fill out both fields!');
@@ -55,7 +54,8 @@ addBtn.addEventListener('click', function() {
 
     const newExpense = {
         reason: reasonText,
-        amount: amountText
+        amount: amountText,
+        category: categoryText 
     };
 
     expenses.push(newExpense);
